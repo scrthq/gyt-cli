@@ -12,6 +12,13 @@ packages = [
 [tool.poetry.scripts]
 gyt = "gyt_cli.cli:app"
 
+[tool.pytest.ini_options]
+addopts = "--junitxml=test-results.xml --html=test-results.html --self-contained-html -rA"
+testpaths = [
+    "tests",
+    "integration",
+]
+
 [tool.poetry.dependencies]
 python = "^3.10"
 typer = {extras = ["all"], version = "^0.12.0"}
