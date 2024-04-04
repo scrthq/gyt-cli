@@ -1,6 +1,7 @@
-from gyt_cli.commands.config.init import init
-from gyt_cli.commands.config.get import get
-from gyt_cli.commands.config.path import path
+from gyt_cli.commands.conf.init import init
+from gyt_cli.commands.conf.get import get
+from gyt_cli.commands.conf.path import path
+from gyt_cli.commands.conf.aliases import add_gyt_aliases
 
 import typer
 
@@ -10,6 +11,7 @@ app = typer.Typer(
 app.command()(init)
 app.command()(get)
 app.command()(path)
+app.command()(add_gyt_aliases)
 
 if __name__ == "__main__":
     app()

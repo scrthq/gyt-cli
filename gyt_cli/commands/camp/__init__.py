@@ -84,7 +84,7 @@ def camp(
             help="Any breaking changes included with this commit",
         ),
     ] = None,
-    commit_type: Annotated[
+    type: Annotated[
         CommitTypes,
         typer.Option(
             help="The type of commit this is. Defaults to 'feat', which is short for 'feature'",
@@ -121,7 +121,7 @@ def camp(
     else:
         sub = "-m"
 
-    msg = commit_type
+    msg = type
     if scope:
         msg += "(" + scope + ")"
     else:
