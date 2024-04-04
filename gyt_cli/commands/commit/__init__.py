@@ -6,72 +6,6 @@ import typer
 
 app = typer.Typer()
 
-#!/usr/bin/env python
-"""
-## Installation
-
-1. Download this file
-2. Remove the .py extension, renaming the file to 'git-camp'
-3. Make the file executable: `chmod +x git-camp`
-4. Place the file somewhere in PATH so it's accessible from Git
-5. Use with Git in place of `git commit`, e.g.
-
-```sh
-git camp -am 'added button' \
-    --body 'Button enables developers to toggle feature flags within the admin panel' \
-    --breaking-changes 'Removes buttonless workflow' \
-    --type feat \
-    --scope admin
-```
-
-Output:
-
-```sh
-= = = Rendered commit message = = =
-feat(admin): added button
-
-Button enables developers to toggle feature flags within the admin panel
-
-BREAKING CHANGE: Removes buttonless workflow
-= = = = = = = = = = = = = = = = = =
-
-The following files have been added, modified, moved, or removed:
-********************************************************************
-
-A       button.js
-
-
-********************************************************************
-[main 6b9ade9] feat(admin): added button
- 1 file changed, 0 insertions(+), 0 deletions(-)
- create mode 100644 button.js
-Commit successful!
-```
-
-## Getting Help
-
-$ git camp -h
-usage: git camp [-h] [-m MESSAGE] [-am ALL_WITH_MESSAGE] [--body BODY] [--breaking-changes BREAKING_CHANGES] [--type {feat,fix,docs,style,refactor,test,chore,ci}]
-                  [--scope SCOPE] [--dry-run] [--push]
-
-Git Conventional Commit helper script
-
-options:
-  -h, --help            show this help message and exit
-  -m MESSAGE, --message MESSAGE
-                        Commit message subject
-  -am ALL_WITH_MESSAGE, --all-with-message ALL_WITH_MESSAGE
-                        Commit message with --all included
-  --body BODY           Commit message body and additional notes
-  --breaking-changes BREAKING_CHANGES
-                        Any breaking changes that this commit introduces
-  --type {feat,fix,docs,style,refactor,test,chore,ci}
-                        Commit type
-  --scope SCOPE         Scope of the commit
-  --dry-run             Do not actually commit, instead passing --dry-run to git commit
-  --no-push             If true, does not perform a git push after a successful commit
-"""
-
 import enum
 import subprocess
 import sys
@@ -122,6 +56,7 @@ class CommitTypes(str, enum.Enum):
 @app.callback(
     invoke_without_command=True,
     no_args_is_help=True,
+    help="Commands to help with commit message generation and management. Prioritizes Conventional Commit format in a way that also supports Atlassian Smart Commits for issue commenting and time tracking via commit messages.",
 )
 def camp(
     ctx: typer.Context,

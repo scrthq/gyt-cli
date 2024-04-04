@@ -4,7 +4,7 @@ import git
 import typer
 
 app = typer.Typer(
-    help="Cleans up branches that have been merged into main/master",
+    help="Cleans up branches that have been merged into main/master.",
 )
 
 @app.callback(invoke_without_command=True)
