@@ -27,3 +27,35 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
           verbose: true
           print-hash: true
+
+  ######################## TAG ########################
+  tag:
+    name: Create tag from main for release
+    runs-on: ubuntu-22.04
+    needs:
+      - publish
+    permissions:
+      contents: write
+    if: >-
+      ${{
+        github.event_name != 'release'
+        && github.event.release.tag_name == null
+        && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: '0'
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.67.0
+        id: tag-action
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          PRERELEASE: ${{ github.event_name == 'pull_request' }}
+          DRY_RUN: false
+          BRANCH_HISTORY: compare
+          RELEASE_BRANCHES: main,master
+          FORCE_WITHOUT_CHANGES: true
