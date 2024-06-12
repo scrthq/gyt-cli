@@ -1,0 +1,56 @@
+#
+# This example uses the Container Jobs mechanism in GitHub Actions to specify a
+# container image to run the steps of the job within, compared to needing to explicitly
+# run the container image and mount the source and output directories.
+#
+# This method allows your script step to call `ash` directly, as it is provided in the
+# PATH of the ASH container image. `ash` will also handle creating the output-dir for
+# you to make things easy, but you can always explicitly call `mkdir -p ash_output`
+# from the script before calling `ash` as well, if preferred.
+#
+# This example, like the others included in this repository, uses an example image
+# tag for the ASH container. This is intended to be replaced with a valid repository and
+# image tag for the ASH container, whether publicly available or one from a private
+# registry hosted within your internal environment.
+#
+# More info on Container Jobs in GitHub Actions:
+#      https://docs.github.com/en/actions/using-jobs/running-jobs-in-a-container
+#
+name: Run ASH
+
+on:
+  push:
+    branches: [ '**' ]
+
+env:
+  ASH_OUTPUT_PATH: ash_output
+
+jobs:
+  containerjob:
+    name: Run ASH Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ASH
+        uses: actions/checkout@v4
+        with:
+          path: ./automated-security-helper
+          repository: awslabs/automated-security-helper
+          ref: v1.3.3
+      - name: Checkout app repo
+        uses: actions/checkout@v4
+        with:
+          path: ./repo
+      - name: Run ASH scan against repo
+        run: |
+          export PATH="$(pwd)/automated-security-helper:$PATH"
+
+          ash \
+            --source-dir "$(pwd)/repo" \
+            --output-dir "${{ env.ASH_OUTPUT_PATH }}"
+
+      - name: Publish ${{ env.ASH_OUTPUT_PATH }}
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: ${{ env.ASH_OUTPUT_PATH }}
+          path: ${{ env.ASH_OUTPUT_PATH }}
