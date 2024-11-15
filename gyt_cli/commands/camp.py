@@ -117,7 +117,7 @@ def camp(
         ),
     ] = True,
 ):
-    config = GytCliConfig()
+    config = GytCliConfig().model_dump()
     msg_str = message
     if all:
         sub = "-am"
@@ -134,7 +134,7 @@ def camp(
         if len(found) > 0:
             msg += "(" + ",".join(found) + ")"
 
-    if config.jira.include_comment:
+    if config.get("jira", {}).get("include_comment", True):
         msg += f": #comment {msg_str}"
 
     if time:
