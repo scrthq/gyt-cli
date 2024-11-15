@@ -3,41 +3,37 @@
 # import re
 # from typing_extensions import Annotated
 import typer
-
-from gyt_cli.config.model import GytCliConfig
-
-app = typer.Typer()
-
 import enum
 import subprocess
 import sys
 import re
 from typing_extensions import Annotated
 
+from gyt_cli.config.model import CommitConfig, GytCliConfig, JiraConfig
+
+app = typer.Typer()
+
+
 try:
     import git
 except ModuleNotFoundError:
-    subprocess.run([
-        sys.executable,
-        "-m",
-        "pip",
-        "install",
-        "gitpython"
-    ])
+    subprocess.run([sys.executable, "-m", "pip", "install", "gitpython"])
     import git
 
 try:
     import typer
 except ModuleNotFoundError:
-    subprocess.run([
-        sys.executable,
-        "-m",
-        "pip",
-        "install",
-        "typer",
-        "rich",
-        "shellingham",
-    ])
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "typer",
+            "rich",
+            "shellingham",
+        ]
+    )
     import typer
 
 
@@ -117,7 +113,11 @@ def camp(
         ),
     ] = True,
 ):
-    config = GytCliConfig().model_dump()
+    gyt_cli_config = GytCliConfig()
+    if isinstance(gyt_cli_config.jira, dict):
+        gyt_cli_config.jira = JiraConfig(**gyt_cli_config.jira)
+    if isinstance(gyt_cli_config.commit, dict):
+        gyt_cli_config.commit = CommitConfig(**gyt_cli_config.commit)
     msg_str = message
     if all:
         sub = "-am"
@@ -134,8 +134,10 @@ def camp(
         if len(found) > 0:
             msg += "(" + ",".join(found) + ")"
 
-    if config.get("jira", {}).get("include_comment", True):
+    if gyt_cli_config.jira.include_comment:
         msg += f": #comment {msg_str}"
+    else:
+        msg += f": {msg_str}"
 
     if time:
         msg += f" #time {time} {msg_str}"

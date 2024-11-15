@@ -17,7 +17,7 @@ class JiraProject(ConfigBaseModel):
 
 
 class JiraConfig(ConfigBaseModel):
-    include_comment: bool = Field(default=True)
+    include_comment: bool = Field(default=False)
     projects: dict[str, JiraProject] = Field(default_factory=dict)
 
     def get_issue_url(self, issue: str) -> str:
