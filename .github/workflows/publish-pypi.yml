@@ -24,7 +24,7 @@ jobs:
         uses: snok/install-poetry@v1.3.4
       - name: Build wheels with Poetry
         run: poetry build
-      - name: Publish package distributions to TestPyPI
+      - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           verbose: true

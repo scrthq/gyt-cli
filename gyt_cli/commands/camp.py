@@ -3,39 +3,37 @@
 # import re
 # from typing_extensions import Annotated
 import typer
-
-app = typer.Typer()
-
 import enum
 import subprocess
 import sys
 import re
 from typing_extensions import Annotated
 
+from gyt_cli.config.model import CommitConfig, GytCliConfig, JiraConfig
+
+app = typer.Typer()
+
+
 try:
     import git
 except ModuleNotFoundError:
-    subprocess.run([
-        sys.executable,
-        "-m",
-        "pip",
-        "install",
-        "gitpython"
-    ])
+    subprocess.run([sys.executable, "-m", "pip", "install", "gitpython"])
     import git
 
 try:
     import typer
 except ModuleNotFoundError:
-    subprocess.run([
-        sys.executable,
-        "-m",
-        "pip",
-        "install",
-        "typer",
-        "rich",
-        "shellingham",
-    ])
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "typer",
+            "rich",
+            "shellingham",
+        ]
+    )
     import typer
 
 
@@ -89,7 +87,7 @@ def camp(
         typer.Option(
             help="The type of commit this is. Defaults to 'feat', which is short for 'feature'",
         ),
-    ] = CommitTypes.FEAT.value,
+    ] = None,
     scope: Annotated[
         str,
         typer.Option(
@@ -115,6 +113,15 @@ def camp(
         ),
     ] = True,
 ):
+    gyt_cli_config = GytCliConfig()
+    if isinstance(gyt_cli_config.jira, dict):
+        gyt_cli_config.jira = JiraConfig(**gyt_cli_config.jira)
+    if isinstance(gyt_cli_config.commit, dict):
+        gyt_cli_config.commit = CommitConfig(**gyt_cli_config.commit)
+
+    if type is None:
+        type = gyt_cli_config.commit.default_type if gyt_cli_config.commit.default_type else CommitTypes.FEAT
+
     msg_str = message
     if all:
         sub = "-am"
@@ -131,11 +138,13 @@ def camp(
         if len(found) > 0:
             msg += "(" + ",".join(found) + ")"
 
-    if time:
+    if gyt_cli_config.jira.include_comment:
         msg += f": #comment {msg_str}"
-        msg += f" #time {time} {msg_str}"
     else:
-        msg += f": #comment {msg_str}"
+        msg += f": {msg_str}"
+
+    if time:
+        msg += f" #time {time} {msg_str}"
 
     cmd = ["git", "commit", sub, msg]
 

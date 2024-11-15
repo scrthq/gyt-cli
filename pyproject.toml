@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gyt-cli"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Python CLI abstracting common Git interactions like Conventional Commit and Atlassian Smart Commit helpers"
 authors = ["Nate Ferrell <nate@scrthq.com>"]
 license = "Apache-2.0"
