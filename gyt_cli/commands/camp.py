@@ -87,7 +87,7 @@ def camp(
         typer.Option(
             help="The type of commit this is. Defaults to 'feat', which is short for 'feature'",
         ),
-    ] = CommitTypes.FEAT.value,
+    ] = None,
     scope: Annotated[
         str,
         typer.Option(
@@ -118,6 +118,10 @@ def camp(
         gyt_cli_config.jira = JiraConfig(**gyt_cli_config.jira)
     if isinstance(gyt_cli_config.commit, dict):
         gyt_cli_config.commit = CommitConfig(**gyt_cli_config.commit)
+
+    if type is None:
+        type = gyt_cli_config.commit.default_type if gyt_cli_config.commit.default_type else CommitTypes.FEAT
+
     msg_str = message
     if all:
         sub = "-am"
