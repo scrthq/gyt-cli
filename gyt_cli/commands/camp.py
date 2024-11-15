@@ -4,6 +4,8 @@
 # from typing_extensions import Annotated
 import typer
 
+from gyt_cli.config.model import GytCliConfig
+
 app = typer.Typer()
 
 import enum
@@ -115,6 +117,7 @@ def camp(
         ),
     ] = True,
 ):
+    config = GytCliConfig()
     msg_str = message
     if all:
         sub = "-am"
@@ -131,11 +134,11 @@ def camp(
         if len(found) > 0:
             msg += "(" + ",".join(found) + ")"
 
+    if config.jira.include_comment:
+        msg += f": #comment {msg_str}"
+
     if time:
-        msg += f": #comment {msg_str}"
         msg += f" #time {time} {msg_str}"
-    else:
-        msg += f": #comment {msg_str}"
 
     cmd = ["git", "commit", sub, msg]
 
