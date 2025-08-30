@@ -40,6 +40,9 @@ jobs:
       - publish-test-pypi
     permissions:
       contents: write
+    outputs:
+      last_tag: ${{ steps.get-version.outputs.last_tag }}
+      tag: ${{ steps.get-version.outputs.tag }}
     if: >-
       ${{
         github.event_name != 'release'
@@ -50,12 +53,13 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ github.sha }}
-          fetch-depth: "0"
 
       - name: Read version from pyproject.toml
         id: get-version
         run: |
+          LAST_TAG=$(git ls-remote --tags origin | grep -o 'refs/tags/[^{}]*' | sed 's|refs/tags/||' | sort -V | tail -n 1)
           VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=v$VERSION" >> $GITHUB_OUTPUT
 
@@ -65,3 +69,31 @@ jobs:
           git config --local user.name "GitHub Action"
           git tag ${{ steps.get-version.outputs.tag }}
           git push origin ${{ steps.get-version.outputs.tag }}
+
+
+  release:
+    runs-on: ubuntu-22.04
+    needs:
+      - publish-test-pypi
+      - tag
+    permissions:
+      contents: write
+    if: >-
+      ${{
+        github.event_name != 'release'
+        && github.event.release.tag_name == null
+        && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      }}
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ needs.tag.outputs.tag }}
+          release_name: ${{ needs.tag.outputs.tag }}
+          body: |
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ needs.tag.outputs.last_tag }}...${{ needs.tag.outputs.tag }}
+          draft: false
+          prerelease: false
