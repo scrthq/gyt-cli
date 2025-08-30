@@ -3,6 +3,7 @@ import subprocess
 from typing import Literal
 from gyt_cli.utils import list_subcommands
 
+
 class AliasScope(Enum):
     GLOBAL = "global"
     LOCAL = "local"
