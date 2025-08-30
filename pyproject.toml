@@ -1,9 +1,10 @@
 [project]
 name = "gyt-cli"
-version = "0.3.0"
+version = "0.3.1"
+
 description = "A Python CLI abstracting common Git interactions like Conventional Commit and Atlassian Smart Commit helpers"
 authors = [{ name = "Nate Ferrell", email = "nate@scrthq.com" }]
-requires-python = "~=3.10"
+requires-python = ">=3.10,<4.0.0"
 readme = "README.md"
 license = "Apache-2.0"
 dependencies = [
