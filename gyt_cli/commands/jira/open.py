@@ -5,6 +5,7 @@ import typer
 
 from gyt_cli.utils import load_config
 
+
 def open_jira(
     ctx: typer.Context,
     extra: Annotated[
@@ -34,4 +35,6 @@ def open_jira(
             except ValueError as exc:
                 raise typer.Abort(exc)
     else:
-        raise typer.Abort("No Jira ticket found in current branch and no additional values passed into --issues.")
+        raise typer.Abort(
+            "No Jira ticket found in current branch and no additional values passed into --issues."
+        )

@@ -9,9 +9,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: 3.12
-      - name: Install and configure Poetry
-        uses: snok/install-poetry@v1.3.4
+      - name: Install UV
+        run: pip install uv
+      - name: Cache UV dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: ${{ runner.os }}-uv-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
       - name: Install deps
-        run: poetry install
+        run: uv sync
       - name: Test
-        run: poetry run pytest
+        run: uv run pytest

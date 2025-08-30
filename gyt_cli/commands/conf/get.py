@@ -8,6 +8,6 @@ def get(return_only: bool = False):
     if return_only:
         return config.model_dump()
     console = Console()
-    with open(config.config_path, 'r') as f:
-        syntax = Syntax(f.read(), 'yaml', theme="ansi_dark")
+    with open(config.config_path, "r") as f:
+        syntax = Syntax(f.read(), "yaml", theme="ansi_dark")
         console.print(syntax)

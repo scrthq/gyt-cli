@@ -3,6 +3,7 @@ from typing_extensions import Annotated
 from gyt_cli.config.model import JiraProject
 from gyt_cli.utils import load_config
 
+
 def add_project(
     name: Annotated[
         str,
@@ -51,7 +52,7 @@ def remove_project(
         typer.Option(
             help="The key of the Jira project for issues",
         ),
-    ]
+    ],
 ):
     """
     Remove a Jira project mapping from the configuration.
