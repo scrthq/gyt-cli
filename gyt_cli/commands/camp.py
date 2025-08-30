@@ -83,11 +83,11 @@ def camp(
         ),
     ] = None,
     type: Annotated[
-        CommitTypes | None,
+        CommitTypes,
         typer.Option(
             help="The type of commit this is. Defaults to 'feat', which is short for 'feature'",
         ),
-    ] = None,
+    ] = CommitTypes.FEAT,
     scope: Annotated[
         str | None,
         typer.Option(
