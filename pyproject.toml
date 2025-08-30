@@ -1,15 +1,19 @@
-[tool.poetry]
+[project]
 name = "gyt-cli"
-version = "0.2.0"
+version = "0.3.0"
 description = "A Python CLI abstracting common Git interactions like Conventional Commit and Atlassian Smart Commit helpers"
-authors = ["Nate Ferrell <nate@scrthq.com>"]
-license = "Apache-2.0"
+authors = [{ name = "Nate Ferrell", email = "nate@scrthq.com" }]
+requires-python = "~=3.10"
 readme = "README.md"
-packages = [
-    { include = "gyt_cli", from = "." },
+license = "Apache-2.0"
+dependencies = [
+    "typer>=0.16.1",
+    "gitpython>=3.1.43,<4",
+    "pyyaml>=6.0.1,<7",
+    "pydantic>=2.6.4,<3",
 ]
 
-[tool.poetry.scripts]
+[project.scripts]
 gyt = "gyt_cli.cli:app"
 
 [tool.pytest.ini_options]
@@ -19,20 +23,24 @@ testpaths = [
     "integration",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-typer = {extras = ["all"], version = "^0.12.0"}
-GitPython = "^3.1.43"
-PyYAML = "^6.0.1"
-pydantic = "^2.6.4"
+[tool.hatch.build.targets.sdist]
+include = ["gyt_cli"]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.1.1"
-black = "^24.3.0"
-pytest-html = "^4.1.1"
-pytest-black = "^0.3.12"
-mypy = "^1.9.0"
+[tool.hatch.build.targets.wheel]
+include = ["gyt_cli"]
+
+[tool.hatch.build.targets.wheel.sources]
+"gyt_cli" = "gyt_cli"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.4.1",
+    "black>=25.1.0",
+    "pytest-html>=4.1.1",
+    "pytest-black>=0.6.0",
+    "mypy>=1.17.1",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -14,6 +14,8 @@ import typer
 app = typer.Typer(
     help="Gitty Young Thang CLI",
 )
+
+
 @app.callback(
     no_args_is_help=True,
     invoke_without_command=True,
@@ -36,6 +38,7 @@ def gyt_main(
         typer.echo("No command specified")
         raise typer.Exit()
     return None
+
 
 app.add_typer(ci, name="ci")
 app.add_typer(cleant, name="cleant")

@@ -6,7 +6,7 @@ from gyt_cli.constants import APP_CONFIG_PATH
 
 
 class ConfigBaseModel(BaseModel):
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra="forbid")
 
 
 class JiraProject(ConfigBaseModel):
@@ -21,20 +21,27 @@ class JiraConfig(ConfigBaseModel):
     projects: dict[str, JiraProject] = Field(default_factory=dict)
 
     def get_issue_url(self, issue: str) -> str:
-        key = issue.split('-')[0]
+        key = issue.split("-")[0]
         if key in self.projects:
-            return f'https://{self.projects[key].subdomain}.atlassian.net/browse/{issue}'
+            return (
+                f"https://{self.projects[key].subdomain}.atlassian.net/browse/{issue}"
+            )
         else:
-            print(f"No Jira project found for {issue}, finding default project", file=sys.stderr)
+            print(
+                f"No Jira project found for {issue}, finding default project",
+                file=sys.stderr,
+            )
             for project in self.projects.values():
                 if project.is_default:
-                    return f'https://{project.subdomain}.atlassian.net/browse/{issue}'
+                    return f"https://{project.subdomain}.atlassian.net/browse/{issue}"
 
-        raise ValueError(f"No Jira project found for {issue} and no default identified!")
+        raise ValueError(
+            f"No Jira project found for {issue} and no default identified!"
+        )
 
 
 class CommitConfig(ConfigBaseModel):
-    default_type: str = Field(default='feat')
+    default_type: str = Field(default="feat")
     push_on_commit: bool = Field(default=True)
 
 
@@ -45,12 +52,12 @@ class GytCliConfig(ConfigBaseModel):
 
     def model_post_init(self, __context):
         super().model_post_init(__context)
-        with open(self.config_path, 'r') as f:
+        with open(self.config_path, "r") as f:
             # Update self with the loaded config
             self.__dict__.update(yaml.safe_load(f))
 
     def save(self):
-        with open(self.config_path, 'w') as f:
+        with open(self.config_path, "w") as f:
             f.write(yaml.dump(self.model_dump()))
         print(f"Configuration saved @ {self.config_path}")
         return self

@@ -120,7 +120,11 @@ def camp(
         gyt_cli_config.commit = CommitConfig(**gyt_cli_config.commit)
 
     if type is None:
-        type = gyt_cli_config.commit.default_type if gyt_cli_config.commit.default_type else CommitTypes.FEAT
+        type = (
+            gyt_cli_config.commit.default_type
+            if gyt_cli_config.commit.default_type
+            else CommitTypes.FEAT
+        )
 
     msg_str = message
     if all:
