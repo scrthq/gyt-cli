@@ -1,7 +1,3 @@
-import subprocess
-import git
-import re
-from typing_extensions import Annotated
 import typer
 
 from gyt_cli.commands.jira.config import add_project

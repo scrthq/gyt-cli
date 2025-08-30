@@ -71,31 +71,31 @@ def camp(
         ),
     ] = True,
     body: Annotated[
-        str,
+        str | None,
         typer.Option(
             help="Commit message body",
         ),
     ] = None,
     breaking_changes: Annotated[
-        str,
+        str | None,
         typer.Option(
             help="Any breaking changes included with this commit",
         ),
     ] = None,
     type: Annotated[
-        CommitTypes,
+        CommitTypes | None,
         typer.Option(
             help="The type of commit this is. Defaults to 'feat', which is short for 'feature'",
         ),
     ] = None,
     scope: Annotated[
-        str,
+        str | None,
         typer.Option(
             help="The scope of work for this commit. This will typically be a ticket ID, e.g. Jira issue number, or some other work identifier, along with a short name for the internal subcomponent this is for",
         ),
     ] = None,
     time: Annotated[
-        str,
+        str | None,
         typer.Option(
             help="Time tracking details for use with systems like Atlassian Smart Commits",
         ),
@@ -120,11 +120,13 @@ def camp(
         gyt_cli_config.commit = CommitConfig(**gyt_cli_config.commit)
 
     if type is None:
-        type = (
+        type_str = (
             gyt_cli_config.commit.default_type
             if gyt_cli_config.commit.default_type
-            else CommitTypes.FEAT
+            else CommitTypes.FEAT.value
         )
+    else:
+        type_str = type.value
 
     msg_str = message
     if all:
@@ -132,9 +134,9 @@ def camp(
     else:
         sub = "-m"
 
-    msg = type
+    msg = type_str
     if scope:
-        msg += "(" + scope + ")"
+        msg = f"{msg}({scope})"
     else:
         current_branch = git.Repo(search_parent_directories=True).active_branch.name
         jira_pattern = re.compile(r"([A-Z]+\-\d+)")

@@ -1,6 +1,5 @@
 from enum import Enum
 import subprocess
-from typing import Literal
 from gyt_cli.utils import list_subcommands
 
 
@@ -9,7 +8,7 @@ class AliasScope(Enum):
     LOCAL = "local"
 
 
-def add_gyt_aliases(scope: AliasScope = "global"):
+def add_gyt_aliases(scope: AliasScope = AliasScope.GLOBAL):
     subcommands = list_subcommands()
     for subcommand in subcommands:
         print(f"Adding {scope.value} git alias for {subcommand}: !gyt {subcommand}")

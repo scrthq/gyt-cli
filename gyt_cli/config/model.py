@@ -1,8 +1,9 @@
 import sys
 from pydantic import BaseModel, ConfigDict, Field
 import yaml
+from pathlib import Path
 
-from gyt_cli.constants import APP_CONFIG_PATH
+from gyt_cli.constants import APP_CONFIG_PATH, APP_CONFIG_DIR
 
 
 class ConfigBaseModel(BaseModel):
@@ -52,9 +53,13 @@ class GytCliConfig(ConfigBaseModel):
 
     def model_post_init(self, __context):
         super().model_post_init(__context)
-        with open(self.config_path, "r") as f:
-            # Update self with the loaded config
-            self.__dict__.update(yaml.safe_load(f))
+        Path(APP_CONFIG_DIR).mkdir(exist_ok=True, parents=True)
+        if Path(self.config_path).exists():
+            with open(self.config_path, "r") as f:
+                # Update self with the loaded config
+                self.__dict__.update(yaml.safe_load(f))
+        else:
+            self.save()
 
     def save(self):
         with open(self.config_path, "w") as f:
