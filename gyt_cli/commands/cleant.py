@@ -26,6 +26,14 @@ def cleant(
     current_branch = repo.active_branch.name
     current_branch_is_merged = False
 
+    # Clean up worktrees before branches: a branch checked out in a stale
+    # worktree cannot be deleted until its worktree record is pruned.
+    # `git worktree prune -v` reports what it removes on stderr.
+    print("Pruning worktrees...")
+    _, _, pruned_worktrees = repo.git.worktree("prune", "-v", with_extended_output=True)
+    if pruned_worktrees:
+        print(pruned_worktrees)
+
     if "main" in repo.heads:
         print("Checking out main...")
         repo.git.checkout("main")
