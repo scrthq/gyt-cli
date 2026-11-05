@@ -8,6 +8,16 @@ from gyt_cli.commands.conf import app as conf
 from gyt_cli.commands.fresh import app as fresh
 from gyt_cli.commands.jira import app as jira
 from gyt_cli.commands.repo import app as repo
+from gyt_cli.commands.branches import app as branches
+from gyt_cli.commands.fixup import app as fixup
+from gyt_cli.commands.pr import app as pr
+from gyt_cli.commands.rename import app as rename
+from gyt_cli.commands.squash import app as squash
+from gyt_cli.commands.sync import app as sync
+from gyt_cli.commands.tree import app as tree
+from gyt_cli.commands.undo import app as undo
+from gyt_cli.commands.unwip import app as unwip
+from gyt_cli.commands.wip import app as wip
 
 import typer
 
@@ -47,6 +57,16 @@ app.add_typer(conf, name="conf")
 app.add_typer(fresh, name="fresh")
 app.add_typer(jira, name="jira")
 app.add_typer(repo, name="repo")
+app.add_typer(branches, name="branches")
+app.add_typer(fixup, name="fixup")
+app.add_typer(pr, name="pr")
+app.add_typer(rename, name="rename")
+app.add_typer(squash, name="squash")
+app.add_typer(sync, name="sync")
+app.add_typer(tree, name="tree")
+app.add_typer(undo, name="undo")
+app.add_typer(unwip, name="unwip")
+app.add_typer(wip, name="wip")
 
 if __name__ == "__main__":
     app()
