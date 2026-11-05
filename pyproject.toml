@@ -1,6 +1,6 @@
 [project]
 name = "gyt-cli"
-version = "0.5.3"
+version = "1.0.0"
 
 description = "A Python CLI abstracting common Git interactions like Conventional Commit and Atlassian Smart Commit helpers"
 authors = [{ name = "Nate Ferrell", email = "nate@scrthq.com" }]
@@ -8,10 +8,10 @@ requires-python = ">=3.10,<4.0.0"
 readme = "README.md"
 license = "Apache-2.0"
 dependencies = [
-    "typer>=0.16.1",
-    "gitpython>=3.1.43,<4",
-    "pyyaml>=6.0.1,<7",
-    "pydantic>=2.6.4,<3",
+    "typer>=0.27.3,<1",
+    "gitpython>=3.2.1,<4",
+    "pyyaml>=6.0.3,<7",
+    "pydantic>=2.14.3,<3",
 ]
 
 [project.scripts]
@@ -35,11 +35,10 @@ include = ["gyt_cli"]
 
 [tool.uv]
 dev-dependencies = [
-    "pytest>=8.4.1",
-    "black>=25.1.0",
-    "pytest-html>=4.1.1",
-    "pytest-black>=0.6.0",
-    "mypy>=1.17.1",
+    "pytest>=9.2.0",
+    "black>=26.10.1",
+    "pytest-html>=4.2.0",
+    "mypy>=2.4.1",
 ]
 
 [build-system]
