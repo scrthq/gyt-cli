@@ -7,6 +7,8 @@ import git
 import os
 import typer
 
+from gyt_cli.git_ops import fail, github_web_url
+
 app = typer.Typer()
 
 
@@ -18,12 +20,10 @@ def open():
     repo = git.Repo(os.getcwd(), search_parent_directories=True)
     current_branch = repo.active_branch.name
 
-    url = (
-        repo.remote()
-        .url.replace(".git", "")
-        .replace("git@github.com:", "https://github.com/")
-        + f"/tree/{current_branch}"
-    )
+    try:
+        url = github_web_url(repo.remote().url) + f"/tree/{current_branch}"
+    except ValueError as e:
+        fail(str(e))
     print(f"Opening {url} in browser...")
     typer.launch(url)
 
