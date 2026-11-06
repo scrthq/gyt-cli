@@ -37,17 +37,17 @@ remote's default branch (`refs/remotes/origin/HEAD`), falling back to a local `m
 | Command | What it does |
 | --- | --- |
 | `gyt fresh NAME` | Create a feature branch from HEAD and push it with an upstream. |
-| `gyt camp MESSAGE` | Commit with a Conventional Commit / Atlassian Smart Commit message, then push. |
+| `gyt camp MESSAGE [--type] [--scope] [--breaking-changes]` | Commit with a Conventional Commit / Atlassian Smart Commit message, then push. `--breaking-changes` adds the `!` and a `BREAKING CHANGE:` footer. |
 | `gyt sync [BRANCH] [--merge]` | Fetch and rebase (or merge) the current branch onto `origin/BRANCH`, stashing and restoring uncommitted work. Aborts cleanly on conflicts. |
 | `gyt cleant [BRANCH] [--rebase] [--all] [--force]` | Check out and pull the base branch, delete local branches whose upstream is gone (merged and deleted on origin), then return to your branch (optionally rebasing it). `--all` also deletes branches that were never pushed. |
 | `gyt branches [BRANCH] [--fetch]` | List local branches with ahead/behind counts vs. the base branch and their upstream state (`gone`, `no upstream`, ...). |
 | `gyt undo [--force]` | Undo the last commit, keeping its changes staged. Refuses if it is already pushed unless `--force`. |
-| `gyt squash [BRANCH] [-m MESSAGE] [--type] [--scope] [--push]` | Squash all commits since the branch left the base into one. Reuses the first commit's message, or formats `-m` like `camp`. |
+| `gyt squash [BRANCH] [-m MESSAGE] [--type] [--scope] [--push]` | Squash all commits since the branch left the base into one. Reuses the first non-WIP commit's message, or formats `-m` like `camp`. |
 | `gyt fixup [COMMIT] [--no-rebase]` | Fold staged changes into an earlier commit via `commit --fixup` and a non-interactive autosquash rebase. Prompts for the commit when omitted. |
 | `gyt rename NEW [--local]` | Rename the current branch locally and on origin, and repoint its upstream. |
-| `gyt wip [--no-push]` | Commit everything, including untracked files, as `WIP` (skipping hooks) and push it. |
-| `gyt unwip` | Turn the consecutive `WIP` commits on top of the branch back into uncommitted changes. |
-| `gyt pr [BRANCH] [--no-open]` | Push the branch if needed and open GitHub's new pull request page, titled from the last commit. |
+| `gyt wip [--no-push]` | Commit everything, including untracked files, as `chore: wip` (skipping hooks) and push it. |
+| `gyt unwip` | Turn the consecutive WIP commits on top of the branch back into uncommitted changes. |
+| `gyt pr [BRANCH] [--no-open]` | Push the branch if needed and open GitHub's new pull request page, titled from the latest non-WIP commit. |
 | `gyt tree BRANCH [--path] [--from]` | Check out a branch in a new worktree at `<repo>-<branch>` next to the repo. Creates the branch from the base if it doesn't exist. |
 | `gyt repo` / `gyt ci` / `gyt jira` | Open the branch, CI, or Jira issue in the browser. |
 

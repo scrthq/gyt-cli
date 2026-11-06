@@ -94,3 +94,28 @@ def test_pr_no_open_prints_url(github_clone: Path, launched: list[str]):
     assert result.exit_code == 0, result.output
     assert "https://github.com/acme/widgets/compare/" in result.output
     assert launched == []
+
+
+def test_pr_title_skips_wip_commits(github_clone: Path, launched: list[str]):
+    run_git(github_clone, "checkout", "-b", "feature/alive")
+    commit_file(github_clone, "a.txt", "a\n", "feat: add a")
+    commit_file(github_clone, "b.txt", "b\n", "chore: wip")
+    commit_file(github_clone, "c.txt", "c\n", "WIP")
+
+    result = runner.invoke(app, ["pr"])
+
+    assert result.exit_code == 0, result.output
+    assert launched[0].endswith("?expand=1&title=feat%3A%20add%20a")
+
+
+def test_pr_with_only_wip_commits_leaves_title_blank(
+    github_clone: Path, launched: list[str]
+):
+    run_git(github_clone, "checkout", "-b", "feature/alive")
+    commit_file(github_clone, "a.txt", "a\n", "chore: wip")
+
+    result = runner.invoke(app, ["pr"])
+
+    assert result.exit_code == 0, result.output
+    assert launched[0].endswith("?expand=1")
+    assert "title was left blank" in result.output
