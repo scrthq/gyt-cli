@@ -10,6 +10,7 @@ import re
 from typing_extensions import Annotated
 
 from gyt_cli.config.model import CommitConfig, GytCliConfig, JiraConfig
+from gyt_cli.git_ops import COMMAND_CONTEXT_SETTINGS
 
 app = typer.Typer()
 
@@ -46,14 +47,18 @@ class CommitTypes(str, enum.Enum):
     DOCS = "docs"
     STYLE = "style"
     REFACTOR = "refactor"
+    PERF = "perf"
     TEST = "test"
-    CHORE = "chore"
+    BUILD = "build"
     CI = "ci"
+    CHORE = "chore"
+    REVERT = "revert"
 
 
 @app.callback(
     invoke_without_command=True,
     no_args_is_help=True,
+    context_settings=COMMAND_CONTEXT_SETTINGS,
     help="Commands to help with commit message generation and management. Prioritizes Conventional Commit format in a way that also supports Atlassian Smart Commits for issue commenting and time tracking via commit messages.",
 )
 def camp(
@@ -79,7 +84,7 @@ def camp(
     breaking_changes: Annotated[
         str | None,
         typer.Option(
-            help="Any breaking changes included with this commit",
+            help="Describes a breaking change: adds '!' after the type or scope and a 'BREAKING CHANGE:' footer",
         ),
     ] = None,
     type: Annotated[
@@ -143,6 +148,9 @@ def camp(
         found = [m.group(0) for m in jira_pattern.finditer(current_branch)]
         if len(found) > 0:
             msg += "(" + ",".join(found) + ")"
+
+    if breaking_changes:
+        msg += "!"
 
     if gyt_cli_config.jira.include_comment:
         msg += f": #comment {msg_str}"

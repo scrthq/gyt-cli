@@ -19,8 +19,18 @@ COMMAND_CONTEXT_SETTINGS = {"allow_interspersed_args": True}
 # Branches that are never deleted or treated as feature branches.
 PROTECTED_BRANCHES = {"main", "master"}
 
-# Subject prefix used by `gyt wip` and recognised by `gyt unwip`.
-WIP_SUBJECT = "WIP"
+# Subject written by `gyt wip`. It is a valid Conventional Commit, so a WIP commit
+# that slips through a rebase merge doesn't break the history's format.
+WIP_SUBJECT = "chore: wip"
+
+# Matches WIP_SUBJECT, "chore(ui): wip ...", and the older "WIP" / "wip: ..." forms,
+# but not "Wipe ..." or "chore: wipe ...".
+_WIP_SUBJECT = re.compile(r"(?i)^(chore(\([^)]*\))?!?:\s*)?wip\b")
+
+
+def is_wip_subject(subject: str) -> bool:
+    """True if a commit subject marks a work-in-progress snapshot."""
+    return bool(_WIP_SUBJECT.match(subject))
 
 
 def fail(message: str) -> NoReturn:

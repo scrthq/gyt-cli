@@ -1,5 +1,3 @@
-import re
-
 import typer
 
 from gyt_cli.git_ops import (
@@ -7,15 +5,13 @@ from gyt_cli.git_ops import (
     current_branch,
     fail,
     is_pushed,
+    is_wip_subject,
     open_repo,
 )
 
 app = typer.Typer(
     help="Turns the WIP commits on top of the branch back into uncommitted changes.",
 )
-
-# Matches "WIP", "wip: ...", "WIP - ..." but not "Wipe ...".
-_WIP = re.compile(r"(?i)^wip\b")
 
 
 @app.callback(invoke_without_command=True, context_settings=COMMAND_CONTEXT_SETTINGS)
@@ -31,7 +27,7 @@ def unwip(ctx: typer.Context):
 
     # Count consecutive WIP commits from HEAD, never resetting past the root commit.
     count = 0
-    while commit.parents and _WIP.match(str(commit.summary)):
+    while commit.parents and is_wip_subject(str(commit.summary)):
         count += 1
         commit = commit.parents[0]
     if count == 0:

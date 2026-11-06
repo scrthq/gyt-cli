@@ -1,16 +1,19 @@
 from typing import Optional
 from urllib.parse import quote
 
+import git
 import typer
 from typing_extensions import Annotated
 
 from gyt_cli.git_ops import (
     COMMAND_CONTEXT_SETTINGS,
     base_branch_or_fail,
+    base_ref,
     current_branch,
     fail,
     github_web_url,
     has_upstream,
+    is_wip_subject,
     open_repo,
     push_current_branch,
 )
@@ -18,6 +21,15 @@ from gyt_cli.git_ops import (
 app = typer.Typer(
     help="Pushes the current branch if needed and opens GitHub's new pull request page for it.",
 )
+
+
+def _pr_title(repo: git.Repo, target: str) -> Optional[str]:
+    """Latest real commit subject since the base; WIP snapshots make poor PR titles."""
+    for commit in repo.iter_commits(f"{target}..HEAD", no_merges=True):
+        subject = str(commit.summary)
+        if not is_wip_subject(subject):
+            return subject
+    return None
 
 
 @app.callback(invoke_without_command=True, context_settings=COMMAND_CONTEXT_SETTINGS)
@@ -51,11 +63,20 @@ def pr(
         print(f"Pushing {current}...")
         push_current_branch(repo, current)
 
-    title = quote(repo.head.commit.summary, safe="")
     url = (
         f"{web_url}/compare/{quote(base, safe='/')}...{quote(current, safe='/')}"
-        f"?expand=1&title={title}"
+        "?expand=1"
     )
+    title = _pr_title(repo, base_ref(repo, base))
+    if title:
+        url += f"&title={quote(title, safe='')}"
+    else:
+        typer.secho(
+            f"No non-WIP commits since {base}, so the title was left blank. "
+            "Use a Conventional Commit title.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
     print(f"Pull request page: {url}")
     if open_browser:
         typer.launch(url)

@@ -14,6 +14,7 @@ from gyt_cli.git_ops import (
     fail,
     has_upstream,
     is_dirty,
+    is_wip_subject,
     open_repo,
     push_current_branch,
 )
@@ -38,7 +39,7 @@ def squash(
         typer.Option(
             "--message",
             "-m",
-            help="Message for the squashed commit, formatted like `gyt camp`. Defaults to the branch's first commit message.",
+            help="Message for the squashed commit, formatted like `gyt camp`. Defaults to the branch's first non-WIP commit message.",
             show_default=False,
         ),
     ] = None,
@@ -84,7 +85,17 @@ def squash(
     if message:
         new_message = f"{conventional_prefix(type.value, scope, current)}: {message}"
     else:
-        new_message = repo.git.log("-1", "--format=%B", commits[0])
+        reusable = next(
+            (
+                sha
+                for sha in commits
+                if not is_wip_subject(str(repo.commit(sha).summary))
+            ),
+            None,
+        )
+        if reusable is None:
+            fail("Every commit on this branch is a WIP commit; pass a message with -m.")
+        new_message = repo.git.log("-1", "--format=%B", reusable)
 
     original_head = repo.head.commit.hexsha
     repo.git.reset("--soft", merge_base)

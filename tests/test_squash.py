@@ -75,3 +75,36 @@ def test_squash_with_no_commits_fails(clone: Path):
 
     assert result.exit_code == 1
     assert "No commits" in result.output
+
+
+def test_squash_skips_wip_commits_when_reusing_a_message(clone: Path):
+    run_git(clone, "checkout", "-b", "feature/alive")
+    commit_file(clone, "a.txt", "a\n", "chore: wip")
+    commit_file(clone, "b.txt", "b\n", "feat: real change")
+    commit_file(clone, "c.txt", "c\n", "WIP")
+
+    result = runner.invoke(app, ["squash"])
+
+    assert result.exit_code == 0, result.output
+    assert subjects(clone, "origin/trunk..HEAD") == ["feat: real change"]
+
+
+def test_squash_all_wip_commits_requires_a_message(clone: Path):
+    run_git(clone, "checkout", "-b", "feature/alive")
+    commit_file(clone, "a.txt", "a\n", "chore: wip")
+    commit_file(clone, "b.txt", "b\n", "chore: wip")
+
+    result = runner.invoke(app, ["squash"])
+
+    assert result.exit_code == 1
+    assert "pass a message" in result.output
+    assert len(subjects(clone, "origin/trunk..HEAD")) == 2
+
+
+def test_squash_accepts_the_added_commit_types(clone: Path):
+    _three_commit_branch(clone)
+
+    result = runner.invoke(app, ["squash", "-m", "speed it up", "--type", "perf"])
+
+    assert result.exit_code == 0, result.output
+    assert subjects(clone, "origin/trunk..HEAD") == ["perf: speed it up"]
