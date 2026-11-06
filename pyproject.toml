@@ -1,6 +1,6 @@
 [project]
 name = "gyt-cli"
-version = "1.0.0"
+version = "1.1.0"
 
 description = "A Python CLI abstracting common Git interactions like Conventional Commit and Atlassian Smart Commit helpers"
 authors = [{ name = "Nate Ferrell", email = "nate@scrthq.com" }]
